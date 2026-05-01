@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { Canvas, extend, useFrame } from '@react-three/fiber';
+import { Canvas, extend, useFrame, ThreeElement, ThreeEvent } from '@react-three/fiber';
 import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
 import {
   BallCollider,
@@ -17,15 +17,30 @@ import {
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 import * as THREE from 'three';
 
+// 1. Extend Three Elements safely for TypeScript
 extend({ MeshLineGeometry, MeshLineMaterial });
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      meshLineGeometry: any;
-      meshLineMaterial: any;
-    }
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    meshLineGeometry: ThreeElement<typeof MeshLineGeometry>;
+    meshLineMaterial: ThreeElement<typeof MeshLineMaterial>;
   }
+}
+
+// Type for RigidBody with lerp capability
+type LerpedRigidBody = RapierRigidBody & { lerped?: THREE.Vector3 };
+
+// Type for GLTF nodes and materials
+interface LanyardGLTF {
+  nodes: {
+    card: THREE.Mesh;
+    clip: THREE.Mesh;
+    clamp: THREE.Mesh;
+  };
+  materials: {
+    base: THREE.MeshPhysicalMaterial;
+    metal: THREE.MeshStandardMaterial;
+  };
 }
 
 interface LanyardProps {
@@ -44,14 +59,14 @@ export default function Lanyard({
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    const handleResize = (): void => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    <div className="relative z-0 w-full h-screen flex justify-center items-center transform scale-100 origin-center">
+    <div className="relative w-full h-[500px] flex justify-center items-center">
       <Canvas
         camera={{ position, fov }}
         dpr={[1, isMobile ? 1.5 : 2]}
@@ -80,45 +95,42 @@ interface BandProps {
 }
 
 function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
-  const band = useRef<THREE.Mesh>(null);
-  const fixed = useRef<RapierRigidBody>(null);
-  const j1 = useRef<RapierRigidBody>(null);
-  const j2 = useRef<RapierRigidBody>(null);
-  const j3 = useRef<RapierRigidBody>(null);
-  const card = useRef<RapierRigidBody>(null);
+  const band = useRef<THREE.Mesh<MeshLineGeometry, MeshLineMaterial>>(null);
+  const fixed = useRef<RapierRigidBody>(null!);
+  const j1 = useRef<LerpedRigidBody>(null!);
+  const j2 = useRef<LerpedRigidBody>(null!);
+  const j3 = useRef<RapierRigidBody>(null!);
+  const card = useRef<RapierRigidBody>(null!);
 
-  // Mencegah re-instansiasi setiap frame
   const vec = useMemo(() => new THREE.Vector3(), []);
   const ang = useMemo(() => new THREE.Vector3(), []);
   const rot = useMemo(() => new THREE.Vector3(), []);
   const dir = useMemo(() => new THREE.Vector3(), []);
 
-  const segmentProps: any = {
-    type: 'dynamic' as RigidBodyProps['type'],
+  const segmentProps: RigidBodyProps = {
+    type: 'dynamic',
     canSleep: true,
     colliders: false,
     angularDamping: 4,
     linearDamping: 4
   };
 
-  const { nodes, materials } = useGLTF('/assets/lanyard/card.glb') as any;
-  const texture = useTexture('/assets/lanyard/Lanyard.png');
+  const { nodes, materials } = useGLTF('/assets/lanyard/card.glb') as unknown as LanyardGLTF;
+  
+  // FIX: Mengambil tekstur asli lalu di-clone agar tidak ada error immutability ESLint
+  const baseTexture = useTexture('/assets/lanyard/Lanyard.png');
+  const texture = useMemo(() => {
+    const t = baseTexture.clone();
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.needsUpdate = true;
+    return t;
+  }, [baseTexture]);
 
-  // Memperbaiki ESLint Immutability dengan useMemo
-  const curve = useMemo(
-    () =>
-      new THREE.CatmullRomCurve3(
-        [
-          new THREE.Vector3(),
-          new THREE.Vector3(),
-          new THREE.Vector3(),
-          new THREE.Vector3()
-        ],
-        false,
-        'chordal' // Set langsung di konstruktor
-      ),
-    []
-  );
+  const curve = useMemo(() => new THREE.CatmullRomCurve3(
+    [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()],
+    false,
+    'chordal'
+  ), []);
 
   const [dragged, drag] = useState<false | THREE.Vector3>(false);
   const [hovered, hover] = useState(false);
@@ -129,19 +141,11 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.45, 0]]);
 
   useEffect(() => {
-    // Setup texture wrapping dengan aman
-    if (texture) {
-      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-      texture.needsUpdate = true;
-    }
-    
     if (hovered) {
       document.body.style.cursor = dragged ? 'grabbing' : 'grab';
-      return () => {
-        document.body.style.cursor = 'auto';
-      };
+      return () => { document.body.style.cursor = 'auto'; };
     }
-  }, [hovered, dragged, texture]);
+  }, [hovered, dragged]);
 
   useFrame((state, delta) => {
     if (dragged && typeof dragged !== 'boolean') {
@@ -158,18 +162,21 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
     
     if (fixed.current && j1.current && j2.current && j3.current && card.current && band.current) {
       [j1, j2].forEach((ref) => {
-        const body = ref.current as any;
-        if (!body.lerped) body.lerped = new THREE.Vector3().copy(body.translation());
-        const clampedDistance = Math.max(0.1, Math.min(1, body.lerped.distanceTo(body.translation())));
-        body.lerped.lerp(body.translation(), delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed)));
+        const body = ref.current;
+        if (body) {
+          if (!body.lerped) body.lerped = new THREE.Vector3().copy(body.translation() as THREE.Vector3);
+          const translation = body.translation() as THREE.Vector3;
+          const clampedDistance = Math.max(0.1, Math.min(1, body.lerped.distanceTo(translation)));
+          body.lerped.lerp(translation, delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed)));
+        }
       });
       
       curve.points[0].copy(j3.current.translation() as THREE.Vector3);
-      curve.points[1].copy((j2.current as any).lerped);
-      curve.points[2].copy((j1.current as any).lerped);
+      curve.points[1].copy(j2.current.lerped!);
+      curve.points[2].copy(j1.current.lerped!);
       curve.points[3].copy(fixed.current.translation() as THREE.Vector3);
       
-      (band.current as any).geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
+      (band.current.geometry as MeshLineGeometry).setPoints(curve.getPoints(isMobile ? 16 : 32));
       ang.copy(card.current.angvel() as THREE.Vector3);
       rot.copy(card.current.rotation() as unknown as THREE.Vector3);
       card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z }, true);
@@ -179,14 +186,14 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   return (
     <>
       <group position={[0, 4, 0]}>
-        <RigidBody ref={fixed} {...segmentProps} type={'fixed'} />
-        <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps} type={'dynamic'}>
+        <RigidBody ref={fixed} {...segmentProps} type="fixed" />
+        <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps} type="dynamic">
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[1, 0, 0]} ref={j2} {...segmentProps} type={'dynamic'}>
+        <RigidBody position={[1, 0, 0]} ref={j2} {...segmentProps} type="dynamic">
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[1.5, 0, 0]} ref={j3} {...segmentProps} type={'dynamic'}>
+        <RigidBody position={[1.5, 0, 0]} ref={j3} {...segmentProps} type="dynamic">
           <BallCollider args={[0.1]} />
         </RigidBody>
         <RigidBody
@@ -201,24 +208,20 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
             position={[0, -1.2, -0.05]}
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
-            onPointerUp={(e: any) => {
-              e.target.releasePointerCapture(e.pointerId);
+            onPointerUp={(e: ThreeEvent<PointerEvent>) => {
+              // FIX: Gunakan nativeEvent.target untuk manggil rilis cursor
+              (e.nativeEvent.target as HTMLElement).releasePointerCapture(e.pointerId);
               drag(false);
             }}
-            onPointerDown={(e: any) => {
-              e.target.setPointerCapture(e.pointerId);
-              drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current!.translation() as THREE.Vector3)));
+            onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+              // FIX: Gunakan nativeEvent.target untuk manggil set cursor
+              (e.nativeEvent.target as HTMLElement).setPointerCapture(e.pointerId);
+              const translation = card.current!.translation() as THREE.Vector3;
+              drag(new THREE.Vector3().copy(e.point).sub(vec.copy(translation)));
             }}
           >
             <mesh geometry={nodes.card.geometry}>
-              <meshPhysicalMaterial
-                map={materials.base.map}
-                map-anisotropy={16}
-                clearcoat={isMobile ? 0 : 1}
-                clearcoatRoughness={0.15}
-                roughness={0.9}
-                metalness={0.8}
-              />
+              <meshPhysicalMaterial map={materials.base.map} map-anisotropy={16} clearcoat={isMobile ? 0 : 1} clearcoatRoughness={0.15} roughness={0.9} metalness={0.8} />
             </mesh>
             <mesh geometry={nodes.clip.geometry} material={materials.metal} material-roughness={0.3} />
             <mesh geometry={nodes.clamp.geometry} material={materials.metal} />
@@ -227,15 +230,8 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
       </group>
       <mesh ref={band}>
         <meshLineGeometry />
-        <meshLineMaterial
-          color="white"
-          depthTest={false}
-          resolution={isMobile ? [1000, 2000] : [1000, 1000]}
-          useMap
-          map={texture}
-          repeat={[-4, 1]}
-          lineWidth={1}
-        />
+        {/* FIX: useMap diubah menjadi angka 1 sesuai permintaan tipe TS */}
+        <meshLineMaterial color="white" depthTest={false} resolution={isMobile ? [1000, 2000] : [1000, 1000]} useMap={1} map={texture} repeat={[-4, 1]} lineWidth={1} />
       </mesh>
     </>
   );
