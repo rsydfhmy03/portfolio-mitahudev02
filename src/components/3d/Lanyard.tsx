@@ -66,7 +66,7 @@ export default function Lanyard({
   }, []);
 
   return (
-    <div className="relative w-full h-[500px] flex justify-center items-center">
+   <div className="relative w-full h-full flex justify-center items-center">
       <Canvas
         camera={{ position, fov }}
         dpr={[1, isMobile ? 1.5 : 2]}
