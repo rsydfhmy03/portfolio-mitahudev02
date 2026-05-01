@@ -230,8 +230,16 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
       </group>
       <mesh ref={band}>
         <meshLineGeometry />
-        {/* FIX: useMap diubah menjadi angka 1 sesuai permintaan tipe TS */}
-        <meshLineMaterial color="white" depthTest={false} resolution={isMobile ? [1000, 2000] : [1000, 1000]} useMap={1} map={texture} repeat={[-4, 1]} lineWidth={1} />
+        <meshLineMaterial 
+          args={[{ resolution: isMobile ? new THREE.Vector2(1000, 2000) : new THREE.Vector2(1000, 1000) }]}
+          color="white" 
+          depthTest={false} 
+          resolution={isMobile ? [1000, 2000] : [1000, 1000]} 
+          useMap={1} 
+          map={texture} 
+          repeat={[-4, 1]} 
+          lineWidth={1} 
+        />
       </mesh>
     </>
   );
