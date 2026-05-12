@@ -1,81 +1,136 @@
 'use client';
 
 import Link from 'next/link';
-import { 
-    // GithubIcon, 
-    // LinkedinIcon, 
-    MailIcon, 
-    GlobeIcon, 
-    TerminalIcon } from 'lucide-react';
+import Image from 'next/image';
+import { Mail } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t-4 border-[#72B9F1] bg-[#25406D] text-white mt-20 relative z-20">
-      {/* 
-        Top Banner: Brutalist Ticker/Banner style
-      */}
-      <div className="w-full bg-[#72B9F1] text-[#25406D] font-black uppercase text-sm md:text-base py-3 px-4 flex justify-between items-center border-b-4 border-[#152440]">
+    <footer className="w-full bg-[#0a0f18] text-white border-t-8 border-[#25406D] relative z-20 overflow-hidden">
+      
+      {/* =========================================
+          TOP BANNER: SYSTEM STATUS
+      ========================================= */}
+      <div className="w-full bg-[#72B9F1] text-[#25406D] font-black uppercase text-[10px] sm:text-xs md:text-sm py-2.5 px-4 sm:px-6 lg:px-8 flex justify-between items-center border-b-4 border-[#25406D]">
         <span>System Initialized</span>
         <span className="hidden md:inline-block">Status: Online & Ready</span>
         <span>Version 2.0.26</span>
       </div>
 
-      <div className="max-w-7xl mx-auto w-full px-6 lg:px-4 py-16 grid grid-cols-1 md:grid-cols-12 gap-10">
+      {/* =========================================
+          MAIN FOOTER GRID
+      ========================================= */}
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12">
         
-        {/* BRANDING SECTION (Makan 5 kolom) */}
-        <div className="md:col-span-5 flex flex-col gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 border-2 border-white bg-[#0a0f18] flex items-center justify-center shadow-[4px_4px_0_0_#72B9F1]">
-              <TerminalIcon className="text-[#72B9F1] w-6 h-6" />
-            </div>
-            <h2 className="text-4xl font-black tracking-wider uppercase">Fahmy.</h2>
+        {/* KOLOM 1: BRANDING (5 Kolom) */}
+        <div className="lg:col-span-5 p-8 lg:p-12 lg:border-r-4 border-b-4 lg:border-b-0 border-[#25406D] flex flex-col gap-6 relative">
+          {/* Ornamen Background */}
+          <div className="absolute top-10 right-10 opacity-5">
+            <Image src="/assets/logo/Logo_mitahudev.png" width={150} height={150} alt="Watermark" />
           </div>
-          <p className="text-zinc-300 font-mono text-sm leading-relaxed max-w-sm">
+
+          <div className="flex flex-wrap items-center gap-3 relative z-10">
+            <div className="w-12 h-12 border-2 border-[#72B9F1] bg-white overflow-hidden p-1 shadow-[4px_4px_0_0_#72B9F1]">
+              <Image 
+                src="/assets/logo/Logo_mitahudev.png" 
+                alt="Mitahudev Logo" 
+                width={48} 
+                height={48} 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Title MITAHUDEV */}
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tighter uppercase text-[#72B9F1] bg-[#25406D] px-3 py-1 border-2 border-[#72B9F1] shadow-[4px_4px_0_0_#72B9F1]">
+              &gt;_ MITAHUDEV.
+            </h2>
+          </div>
+
+          <p className="text-zinc-400 font-mono text-sm leading-relaxed max-w-md relative z-10 font-bold mt-2">
             Membangun ekosistem yang persisten. Terbuka untuk diskusi mengenai arsitektur sistem, kolaborasi backend, dan peluang profesional.
           </p>
-        </div>
 
-        {/* SOCIAL LINKS (Makan 3 kolom) */}
-        <div className="md:col-span-3 flex flex-col gap-4">
-          <h3 className="text-xl font-black uppercase border-b-4 border-[#72B9F1] pb-2 inline-block w-fit">Connect_</h3>
-          <div className="flex flex-col gap-3 font-mono font-bold mt-2">
-            <a href="https://github.com/rsydfhmy03" target="_blank" rel="noreferrer" className="flex items-center gap-3 w-fit px-4 py-2 bg-[#0a0f18] border-2 border-[#72B9F1] text-[#72B9F1] hover:bg-[#72B9F1] hover:text-[#0a0f18] shadow-[4px_4px_0_0_#0a0f18] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-              {/* <GithubIcon size={18} /> GitHub */}
-            </a>
-            <a href="https://linkedin.com/in/mitahudev03" target="_blank" rel="noreferrer" className="flex items-center gap-3 w-fit px-4 py-2 bg-[#0a0f18] border-2 border-[#72B9F1] text-[#72B9F1] hover:bg-[#72B9F1] hover:text-[#0a0f18] shadow-[4px_4px_0_0_#0a0f18] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-              {/* <LinkedinIcon size={18} /> LinkedIn */}
-            </a>
-            <a href="mailto:fahmyrosyadi29@gmail.com" className="flex items-center gap-3 w-fit px-4 py-2 bg-[#0a0f18] border-2 border-[#72B9F1] text-[#72B9F1] hover:bg-[#72B9F1] hover:text-[#0a0f18] shadow-[4px_4px_0_0_#0a0f18] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-              <MailIcon size={18} /> Email
-            </a>
+          <div className="inline-flex items-center gap-3 px-4 py-3 bg-[#152440] border-2 border-[#25406D] w-fit mt-auto shadow-[4px_4px_0_0_#152440]">
+            <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse border border-[#0a0f18]"></div>
+            <span className="font-mono text-[10px] font-black text-[#72B9F1] uppercase tracking-widest">
+              Online & Ready • V 2.0
+            </span>
           </div>
         </div>
 
-        {/* SYSTEM TERMINAL (Makan 4 kolom) */}
-        <div className="md:col-span-4 flex flex-col gap-4">
-          <h3 className="text-xl font-black uppercase border-b-4 border-[#72B9F1] pb-2 inline-block w-fit">System Log_</h3>
-          <div className="bg-[#0a0f18] border-2 border-white p-4 shadow-[6px_6px_0_0_#72B9F1] font-mono text-xs flex flex-col gap-2 mt-2">
-            <div className="flex items-center gap-2 mb-2 border-b-2 border-zinc-800 pb-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            </div>
-            <p><span className="text-[#72B9F1]">root@fahmy-os</span>:<span className="text-emerald-400">~</span>$ uptime</p>
-            <p className="text-zinc-400">up 24/7, 1 user, load average: 0.01, 0.05, 0.00</p>
-            <p><span className="text-[#72B9F1]">root@fahmy-os</span>:<span className="text-emerald-400">~</span>$ stack --show</p>
-            <p className="text-yellow-400">[&#39;Next.js&#39;, &#39;Tailwind&#39;, &#39;R3F&#39;, &#39;PostgreSQL&#39;]</p>
-            <p className="animate-pulse">_</p>
+        {/* KOLOM 2: NAVIGATE (3 Kolom) */}
+        <div className="lg:col-span-3 p-8 lg:p-12 lg:border-r-4 border-b-4 lg:border-b-0 border-[#25406D] flex flex-col gap-6">
+          <h3 className="text-xl font-black text-white uppercase tracking-widest mb-2 opacity-50">
+            Navigate_
+          </h3>
+          <ul className="flex flex-col gap-5 font-mono text-sm font-bold text-zinc-300">
+            {[
+              { name: 'Home', path: '/' },
+              { name: 'Projects', path: '/projects' },
+              { name: 'Mission Logs', path: '/mission-logs' },
+              { name: 'Download CV', path: '#' },
+              { name: 'Download Portfolio', path: '#' }
+            ].map((item, idx) => (
+              <li key={idx}>
+                <Link href={item.path} className="flex items-center gap-3 hover:text-[#72B9F1] group transition-all w-fit">
+                  <span className="text-[#25406D] group-hover:text-[#72B9F1] transition-colors">-&gt;</span> 
+                  <span className="group-hover:translate-x-1 transition-transform">{item.name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* KOLOM 3: CONNECT (4 Kolom) */}
+        <div className="lg:col-span-4 p-8 lg:p-12 flex flex-col gap-6">
+          <h3 className="text-xl font-black text-white uppercase tracking-widest mb-2 opacity-50">
+            Connect_
+          </h3>
+          <div className="flex flex-col gap-4 font-mono text-xs font-bold">
+            
+            {/* Github Box */}
+            <a href="https://github.com/rsydfhmy03" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-3 border-2 border-[#25406D] hover:border-[#72B9F1] bg-[#152440] hover:bg-[#25406D] transition-all group shadow-[4px_4px_0_0_#0a0f18] hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
+              <div className="bg-[#0a0f18] p-2 border border-[#25406D] group-hover:border-[#72B9F1] text-[#72B9F1]">
+                {/* SVG Github Manual */}
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+              </div>
+              <span className="text-zinc-300 group-hover:text-white transition-colors">github.com/rsydfhmy03</span>
+            </a>
+
+            {/* LinkedIn Box */}
+            <a href="https://www.linkedin.com/in/mitahudev03/" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-3 border-2 border-[#25406D] hover:border-[#72B9F1] bg-[#152440] hover:bg-[#25406D] transition-all group shadow-[4px_4px_0_0_#0a0f18] hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
+              <div className="bg-[#0a0f18] p-2 border border-[#25406D] group-hover:border-[#72B9F1] text-[#72B9F1]">
+                {/* SVG LinkedIn Manual */}
+                <svg width="20" height="20" aria-hidden="true" fill="currentColor" viewBox="0 0 448 512">
+                  <path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path>
+                </svg>
+              </div>
+              <span className="text-zinc-300 group-hover:text-white transition-colors">linkedin.com/in/mitahudev03</span>
+            </a>
+
+            {/* Email Box */}
+            <a href="mailto:fahmyrosyadi29@gmail.com" className="flex items-center gap-4 p-3 border-2 border-[#25406D] hover:border-[#72B9F1] bg-[#152440] hover:bg-[#25406D] transition-all group shadow-[4px_4px_0_0_#0a0f18] hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
+              <div className="bg-[#0a0f18] p-2 border border-[#25406D] group-hover:border-[#72B9F1] text-[#72B9F1]">
+                <Mail width="20" height="20" />
+              </div>
+              <span className="text-zinc-300 group-hover:text-white transition-colors">fahmyrosyadi29@gmail.com</span>
+            </a>
+
           </div>
         </div>
 
       </div>
 
-      {/* COPYRIGHT BOTTOM */}
-      <div className="w-full bg-[#0a0f18] border-t-2 border-white py-6 text-center font-mono text-sm text-[#72B9F1] uppercase font-bold">
-        <p>FAHMY.OS // © {currentYear} ALL RIGHTS RESERVED.</p>
+      <div className="w-full border-t-4 border-[#25406D] bg-[#05080c] py-6 px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">
+        <p className="text-center md:text-left">MITAHUDEV.PORTFOLIO // © {currentYear} ALL RIGHTS RESERVED.</p>
+        <p className="text-center md:text-right flex items-center gap-2">
+          BUILT WITH <span className="text-red-500">♥</span> • NEO-BRUTALISM V1.0
+        </p>
       </div>
+
     </footer>
   );
 }
