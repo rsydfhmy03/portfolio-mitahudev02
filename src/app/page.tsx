@@ -3,6 +3,7 @@ import Capabilities from "@/components/sections/Capabilities";
 import Projects from "@/components/sections/Projects";
 import ScrollVelocity from "@/components/ScrollVelocity/ScrollVelocity";
 import LatestExperience from "@/components/sections/LatestExperience";
+import About from "@/components/sections/About";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
       <Capabilities />
       <LatestExperience />
       <Projects />
+      <About />
     </main>
   );
 }
