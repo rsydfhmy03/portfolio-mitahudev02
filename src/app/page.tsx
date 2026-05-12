@@ -2,6 +2,7 @@ import Hero from "@/components/sections/Hero";
 import Capabilities from "@/components/sections/Capabilities";
 import Projects from "@/components/sections/Projects";
 import ScrollVelocity from "@/components/ScrollVelocity/ScrollVelocity";
+import LatestExperience from "@/components/sections/LatestExperience";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       </section>
 
       <Capabilities />
+      <LatestExperience />
       <Projects />
     </main>
   );
