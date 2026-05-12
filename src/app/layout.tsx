@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import StoreProvider from "@/store/StoreProvider";
 import Footer from "@/components/layout/Footer";
+import FrontendLayoutWrapper from "@/components/layout/FrontendLayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,15 +33,19 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <StoreProvider>
-          {/* Taruh Navbar di sini agar selalu muncul */}
-          <Navbar />
+          {/* Taruh Navbar di sini agar selalu muncul, kecuali di sys-admin */}
+          <FrontendLayoutWrapper>
+            <Navbar />
+          </FrontendLayoutWrapper>
           
           {/* Main Content Area */}
           <div className="flex-grow">
             {children}
           </div>
 
-          <Footer />
+          <FrontendLayoutWrapper>
+            <Footer />
+          </FrontendLayoutWrapper>
         </StoreProvider>
       </body>
     </html>

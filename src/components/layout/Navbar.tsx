@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react'; // 1. Tambahkan useState
+import { useState } from 'react'; 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion'; // 2. Tambahkan AnimatePresence
-import { Download, Menu, X } from 'lucide-react'; // 3. Tambahkan ikon X
+import { motion, AnimatePresence } from 'framer-motion'; 
+import { Download, Menu, X } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
@@ -16,11 +16,10 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false); // State untuk buka/tutup menu HP
+  const [isOpen, setIsOpen] = useState(false); 
 
   return (
     <header className="fixed top-0 left-0 w-full z-[100] pointer-events-none">
-      {/* Navbar Container */}
       <nav className="w-full bg-[#25406D] border-b-4 border-[#72B9F1] pointer-events-auto relative">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[72px]">
           
@@ -99,7 +98,7 @@ export default function Navbar() {
                     <li key={item.name}>
                       <Link
                         href={item.path}
-                        onClick={() => setIsOpen(false)} // Tutup menu kalau link diklik
+                        onClick={() => setIsOpen(false)} 
                         className={cn(
                           "block px-4 py-3 text-sm font-bold uppercase tracking-widest border-2 transition-all",
                           isActive 
