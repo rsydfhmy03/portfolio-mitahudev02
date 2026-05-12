@@ -35,7 +35,7 @@ export default function Navbar() {
                  className="w-full h-full object-cover"
                />
             </div>
-            <span className="font-black text-xl md:text-2xl tracking-tighter text-white uppercase italic">Fahmy.</span>
+            <span className="font-black text-xl md:text-2xl tracking-tighter text-white uppercase italic">Mitahudev.</span>
           </Link>
 
           {/* DESKTOP MENU (Hidden on Mobile) */}

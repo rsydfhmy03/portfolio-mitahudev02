@@ -1,9 +1,14 @@
-'use client';
 import Lanyard from "@/components/3d/Lanyard";
 import ShapeGrid from "@/components/ShapeGrid/ShapeGrid";
 import { Plus } from "lucide-react";
+import { getSiteSettings } from "@/services/siteSettings";
 
-export default function Hero() {
+export default async function Hero() {
+  const settings = await getSiteSettings();
+
+  const [firstName, ...lastNameArr] = (settings?.owner_name || 'FAHMY ROSYADI').split(' ');
+  const lastName = lastNameArr.join(' ');
+
   return (
     <section className="relative w-full lg:h-screen pt-[72px] overflow-hidden border-b-8 border-[#25406D] bg-[#0a0f18]">
       
@@ -28,23 +33,22 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-col gap-5 md:gap-6 z-20">
-            {/* Badge */}
             <div className="inline-flex w-fit items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-[#72B9F1] text-[#25406D] font-black font-mono text-xs md:text-sm border-2 border-[#25406D] shadow-[3px_3px_0_0_#25406D]">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse border border-[#25406D]"></div>
-              <span className="uppercase tracking-widest">I&apos;m Ready For Job</span>
+              <span className="uppercase tracking-widest">{settings?.hero_status || "I'm Ready For Job"}</span>
             </div>
 
             <div>
               <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-[#25406D] leading-[0.9] tracking-tighter uppercase">
-                FAHMY<br />ROSYADI
+                {firstName}<br />{lastName}
               </h1>
               <div className="inline-block mt-3 px-3 py-1.5 md:px-4 md:py-2 bg-[#25406D] text-[#72B9F1] font-black text-lg md:text-xl uppercase border-2 border-[#72B9F1] shadow-[3px_3px_0_0_#152440]">
-                BACKEND DEV.
+                {settings?.hero_role || "BACKEND DEV."}
               </div>
             </div>
 
             <p className="text-[#25406D]/80 font-mono text-sm md:text-base leading-relaxed max-w-lg font-bold border-l-4 border-[#72B9F1] pl-4 md:pl-6">
-              FullStack Developer dengan fokus utama Backend Engineering yang adaptif. Berpengalaman mengorkestrasi ekosistem Node.js, Laravel, arsitektur microservices, hingga integrasi AI modern.
+              {settings?.hero_desc_id || "FullStack Developer dengan fokus utama Backend Engineering yang adaptif..."}
             </p>
 
             <div className="flex flex-wrap gap-2 font-mono text-[10px] md:text-xs font-black">
@@ -55,7 +59,6 @@ export default function Hero() {
               ))}
             </div>
 
-            {/* CTAs */}
             <div className="flex flex-wrap gap-3 md:gap-4 mt-2">
               <button className="px-6 py-3 md:px-8 md:py-4 bg-[#25406D] text-white font-black text-xs md:text-sm border-2 border-[#25406D] shadow-[4px_4px_0_0_#72B9F1] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all uppercase tracking-widest">
                 Consultation
@@ -68,11 +71,9 @@ export default function Hero() {
         </div>
 
         <div className="w-full lg:w-[45%] h-[450px] sm:h-[500px] lg:h-[calc(100vh-72px)] relative">
-          
           <div className="absolute top-6 right-0 font-mono text-[10px] font-bold text-[#72B9F1] tracking-widest opacity-50 hidden lg:block">
             [ ID_CARD_RENDER : ACTIVE ]
           </div>
-
           <div className="absolute inset-0 cursor-grab active:cursor-grabbing">
             <Lanyard position={[0, -0.2, 10]} gravity={[0, -40, 0]} fov={30} />
           </div>
