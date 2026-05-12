@@ -30,9 +30,21 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // WAJIB DIPANGGIL: getUser() berguna untuk me-refresh Auth token jika sudah kedaluwarsa.
-  // Jangan gunakan getSession() karena kurang aman di middleware.
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith('/sys-admin') && pathname !== '/sys-admin/login' && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/sys-admin/login';
+    return NextResponse.redirect(url);
+  }
+
+  if (pathname === '/sys-admin/login' && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/sys-admin'; 
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }
